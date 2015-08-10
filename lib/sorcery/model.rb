@@ -7,7 +7,7 @@ module Sorcery
   # which when called adds the other capabilities to the class.
   # This method is also the place to configure the plugin in the Model layer.
   module Model
-    def authenticates_with_sorcery!
+    def authenticates_with_sorcery! &block
       @sorcery_config = Config.new
 
       extend ClassMethods # included here, before submodules, so they can be overriden by them.
@@ -17,7 +17,7 @@ module Sorcery
       include_required_submodules!
 
       # This runs the options block set in the initializer on the model class.
-      ::Sorcery::Controller::Config.user_config.tap{|blk| blk.call(@sorcery_config) if blk}
+      (block || ::Sorcery::Controller::Config.user_config).tap{|blk| blk.call(@sorcery_config) if blk}
 
       define_base_fields
       init_orm_hooks!
